@@ -5,9 +5,9 @@ from flask import Flask
 
 web_app = Flask(__name__)
 @web_app.route('/')
-def home(): return "Global AI Bot - REAL AI Live 24/7"
+def home(): return "Global AI Bot - REAL AI Live 24/7 - OK", 200
 @web_app.route('/health')
-def health(): return {"status":"Live Real AI"}
+def health(): return "OK - Live", 200
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, PreCheckoutQueryHandler, filters, ContextTypes
@@ -262,7 +262,6 @@ def run_bot():
         print("❌ TOKEN missing - Set BOT_TOKEN in Render Environment!"); 
         return
     print("Starting REAL AI Bot...")
-    loop=asyncio.new_event_loop(); asyncio.set_event_loop(loop)
     app=Application.builder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start",start))
     app.add_handler(CommandHandler("resume",cmd_resume))
@@ -277,7 +276,7 @@ def run_bot():
     app.add_handler(CallbackQueryHandler(button_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND,handle_tool))
     print("Bot Running REAL AI - FIXED")
-    app.run_polling(drop_pending_updates=False,allowed_updates=Update.ALL_TYPES)
+    app.run_polling(drop_pending_updates=False,allowed_updates=Update.ALL_TYPES, close_loop=False)
 
 if __name__=="__main__":
     threading.Thread(target=run_bot,daemon=True).start()
