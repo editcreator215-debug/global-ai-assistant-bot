@@ -12,7 +12,7 @@ def health(): return {"status":"Live Real AI"}
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, PreCheckoutQueryHandler, filters, ContextTypes
 
-BOT_TOKEN = "8905843948:AAHNte04Ell__kmRiEnkWih32-1VkB84enQ"
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "")  # Set in Render Dashboard - Never hardcode!
 FREE_LIMIT = 20
 PREMIUM_PRICE_STARS = 25
 DATA_FILE = "users.json"
