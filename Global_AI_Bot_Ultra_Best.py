@@ -1,32 +1,29 @@
-# ============ RENDER 24/7 FLASK - TOP ============
-from flask import Flask
-import threading
-import os
-import logging
-from datetime import datetime
 
+# ============ RENDER 24/7 FLASK + BOT FIX - WORLD BEST 2026 ============
+import os
+import json
+import logging
+import threading
+import asyncio
+from datetime import datetime
+from flask import Flask
+
+# ---- Flask App ----
 web_app = Flask(__name__)
 
 @web_app.route('/')
 def home():
-    return "Global AI Assistant Bot - Live 24/7 2026 Ultra Best"
+    return "Global AI Assistant Bot - Live 24/7 2026 Ultra Best - FIXED"
 
 @web_app.route('/health')
 def health():
-    return {"status": "Live", "bot": "Global AI Bot", "version": "2026.3-FINAL"}
+    return {"status": "Live", "bot": "Global AI Bot", "version": "2026.4-FIXED"}
 
 @web_app.route('/ping')
 def ping():
     return "PONG"
 
-def run_web():
-    port = int(os.environ.get("PORT", 10000))
-    web_app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False, threaded=True)
-
-threading.Thread(target=run_web, daemon=True).start()
-
-# ============ TELEGRAM BOT ============
-import json
+# ---- Config ----
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, PreCheckoutQueryHandler, filters, ContextTypes
 
@@ -185,13 +182,14 @@ async def invite(update, context):
     else:
         await update.message.reply_text(text, reply_markup=InlineKeyboardMarkup(kb))
 
-def main():
+# ---- Bot Runner with its own loop (FIX for Render) ----
+def run_bot():
     if not BOT_TOKEN or len(BOT_TOKEN) < 20:
         print("BOT_TOKEN missing - Add in Render ENV")
-        import time
-        while True:
-            time.sleep(3600)
-    print("Starting Global AI Bot - WORLD BEST FINAL")
+        return
+    print("Starting Bot Thread with new event loop...")
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     app = Application.builder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("resume", cmd_resume))
@@ -205,8 +203,13 @@ def main():
     app.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT, successful_payment))
     app.add_handler(CallbackQueryHandler(button_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_tool))
-    print("Bot Running Live 24/7")
-    app.run_polling(drop_pending_updates=True, stop_signals=None, allowed_updates=Update.ALL_TYPES, close_loop=False)
+    print("Bot Running Live 24/7 - FIXED")
+    app.run_polling(drop_pending_updates=True, allowed_updates=Update.ALL_TYPES)
 
 if __name__ == "__main__":
-    main()
+    # Start bot in background thread with its own asyncio loop
+    threading.Thread(target=run_bot, daemon=True).start()
+    # Run Flask in main thread (required for Render)
+    port = int(os.environ.get("PORT", 10000))
+    print(f"Starting Flask on 0.0.0.0:{port}")
+    web_app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
