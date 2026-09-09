@@ -43,7 +43,7 @@ def get_user(uid):
 def ai_generate(tool, prompt):
     p = (prompt or "general").strip()
     # If prompt is just /start or hi, give welcome
-    if p.lower() in ["/start","start","hi","hello","hii","hey"]:
+    if p.lower() in ["/start","start","hi","hello","hii","hey","hiiii","ho","/image","/resume","/email","/caption","/idea","/start@global_ai_assistant_bot","hello","start"]:
         return f"""🌍 **Global AI Assistant - Welcome!**
 
 Main aapki help kar sakta hu:
@@ -258,7 +258,9 @@ async def invite(update,context):
     else: await update.message.reply_text(text,reply_markup=InlineKeyboardMarkup(kb))
 
 def run_bot():
-    if not BOT_TOKEN: print("TOKEN missing"); return
+    if not BOT_TOKEN: 
+        print("❌ TOKEN missing - Set BOT_TOKEN in Render Environment!"); 
+        return
     print("Starting REAL AI Bot...")
     loop=asyncio.new_event_loop(); asyncio.set_event_loop(loop)
     app=Application.builder().token(BOT_TOKEN).build()
@@ -275,7 +277,7 @@ def run_bot():
     app.add_handler(CallbackQueryHandler(button_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND,handle_tool))
     print("Bot Running REAL AI - FIXED")
-    app.run_polling(drop_pending_updates=True,allowed_updates=Update.ALL_TYPES)
+    app.run_polling(drop_pending_updates=False,allowed_updates=Update.ALL_TYPES)
 
 if __name__=="__main__":
     threading.Thread(target=run_bot,daemon=True).start()
